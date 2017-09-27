@@ -14,22 +14,26 @@ int main(int argc, char *argv[]) {
 	HANDLE processHandle;
 	string dataToRead;
 
-	string address = argv[1];
+	char* address = argv[1];
 	char* targetProcess = argv[2];
 
 	unsigned int targetAddress;
+
+	if (address == NULL || address == "") {
+		printf("Ckya blyat I expected an address :(\n\n");
+		system("pause");
+		return 0;
+	}
+
+	if (targetProcess == NULL || targetProcess == "") {
+		printf("Cheeke breeke I expected a process to search into :(\n\n");
+		system("pause");
+		return 0;
+	}
+
 	std::stringstream ss;
-	ss << std::hex << address.c_str();
+	ss << std::hex << address;
 	ss >> targetAddress;
-
-	if(address == ""){
-		printf("Ckya blyat I expected an address :(");
-		return 1;
-	}
-
-	if (targetProcess == "") {
-		printf("Cheeke breeke I expected a process to search into :(");
-	}
 
 	dataToRead.resize(20);
 
@@ -40,13 +44,13 @@ int main(int argc, char *argv[]) {
 	if (ProcId == 0) {
 		printf("Could not find process. Exiting...");
 		system("pause");
-		return 1;
+		return 0;
 	}
-	
+
 	processHandle = OpenProcess(PROCESS_ALL_ACCESS, 0, ProcId);
 
 	LPCVOID addressPtr = (LPCVOID)targetAddress;
-	
+
 	BOOL result = ReadProcessMemory(processHandle, addressPtr, &dataToRead, sizeof(dataToRead), 0);
 
 	if (result == 0) {
@@ -55,7 +59,7 @@ int main(int argc, char *argv[]) {
 		system("pause");
 		return 1;
 	}
-	
+
 	cout << "Your data :D" << endl << endl << dataToRead.c_str() << endl << endl;
 
 	ZeroMemory(&dataToRead, sizeof(dataToRead));
